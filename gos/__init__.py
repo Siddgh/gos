@@ -4,7 +4,7 @@ Starting point for GOS
 
 import argparse
 from gos.validators import is_input_valid
-from gos.loggers import print_error, print_success, print_stuff
+from gos.loggers import print_error, print_success, print_header_with_divider
 
 
 def parse_and_validate_input():
@@ -109,6 +109,7 @@ def main():
     else:
         print_error(validation_status["message"], args.silent)
 
+    print_header_with_divider("Running GOS with below paramters", args.silent)
     # flags_dict = create_flags_from_input(args)
 
 
