@@ -1,26 +1,27 @@
+"""
+Starting point for GOS
+"""
+
 import argparse
-
-# Valid Inputs
-# [x] gos -d ../../sampledirectory -y 'text_to_find' -n 'text_to_avoid'
-# [x] gos -f ../../samplefile.txt -y 'text_to_find' -n 'text_to_avoid'
-# TODO: [ ] gos -d ../../sampledirectory -c ../../config.json
-# TODO: [ ] gos -f ../../samplefile.txt -c ../../config.json
-# [x] gos -d ../../sampledirectory -y 'text_to_find'
-# [x] gos -f ../../samplefile.txt -y 'text_to_find'
-# [x] gos -d ../../sampledirectory -n 'text_to_avoid'
-# [x] gos -f ../../samplefile.txt -n 'text_to_avoid'
-
-# Invalid Inputs
-# [ ] gos -f ../../folder/ -n 'text_to_avoid' Folder instead of file
-# [ ] gos -f -n 'text_to_avoid' No file
+from gos.validators import is_input_valid
+from gos.loggers import print_error, print_success, print_stuff
 
 
 def parse_and_validate_input():
-    description = "With GOS (Grep on Steriods), you can efficiently check whether certain strings exist or do not exist in your files or directories."
+    """Parsing inputs"""
+
+    description = "🔍 With GOS (Grep on Steriods), you can efficiently check whether certain strings exist or do not exist in your files or directories."
 
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
         "-i", "--input", nargs="?", help="Input file/directory to search in"
+    )
+
+    parser.add_argument(
+        "-c",
+        "--config",
+        nargs="?",
+        help='JSON config file specifying "should" and "should-not" strings',
     )
 
     parser.add_argument(
@@ -37,14 +38,6 @@ def parse_and_validate_input():
         help="String that should not exists in the given file/directory",
     )
 
-    parser.add_argument("-f", "--file", nargs="?", help="File to search in")
-    parser.add_argument("-d", "--directory", nargs="?", help="Directory to search in")
-    parser.add_argument(
-        "-c",
-        "--config",
-        nargs="?",
-        help='JSON config file specifying "should" and "should-not" strings',
-    )
     parser.add_argument(
         "-s",
         "--silent",
@@ -52,22 +45,7 @@ def parse_and_validate_input():
         help="Suppress output, returns only true/false",
     )
 
-    # if not (args.file or args.directory):
-    #     parser.error("Either file (-f) or directory (-d) is required")
-
-    # if not (args.should or args.should_not or args.config):
-    #     parser.error(
-    #         "Either provide string to look for in -y (should have), -n (should not have) or -c (config json file) "
-    #     )
-
-    # if args.file and args.directory:
-    #     parser.error("Only one of file (-f) or directory (-d) is allowed")
-
-    # if (args.should and args.should_not) and args.config:
-    #     parser.error(
-    #         "Only one of -y (should have) or -n (should not have) or -c (config json file) is allowed"
-    #     )
-    return parser
+    return parser.parse_args()
 
 
 # def create_flags_from_input(args):
@@ -123,8 +101,14 @@ def parse_and_validate_input():
 
 
 def main():
-    parser = parse_and_validate_input()
-    # is_valid = validator.is_input_valid(parser)
+    """Main Function for GOS"""
+    args = parse_and_validate_input()
+    validation_status = is_input_valid(args)
+    if validation_status["status"]:
+        print_success(validation_status["message"], args.silent)
+    else:
+        print_error(validation_status["message"], args.silent)
+
     # flags_dict = create_flags_from_input(args)
 
 

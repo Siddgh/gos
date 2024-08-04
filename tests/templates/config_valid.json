@@ -1,0 +1,4 @@
+{
+  "should": ["Sample Text"],
+  "shouldNot": ["Another Sample Text"]
+}

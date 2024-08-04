@@ -54,11 +54,18 @@ def print_header_with_divider(message, is_silent=False):
 ####################################
 
 
-def print_stuff(message, is_silent=False, color=Fore.WHITE):
+def print_stuff(message: str, is_silent: bool = False, color: str = Fore.WHITE) -> None:
+    """Global print function"""
     if is_silent:
         return
     print(color + message + Style.RESET_ALL)
 
 
-def print_error(message, is_silent=False):
-    print_stuff(message, is_silent, Fore.RED)
+def print_error(message: str, is_silent: bool = False) -> None:
+    """Wrapper to print error message"""
+    print_stuff(f"✗ {message}", is_silent, Fore.RED)
+
+
+def print_success(message: str, is_silent: bool = False) -> None:
+    """Wrapper to print success message"""
+    print_stuff(f"✔ {message}", is_silent, Fore.GREEN)
