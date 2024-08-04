@@ -111,6 +111,7 @@ def main():
 
     print_header_with_divider("Running GOS with below paramters", args.silent)
     # flags_dict = create_flags_from_input(args)
+    # TODO: Check for flags
 
 
 if __name__ == "__main__":
