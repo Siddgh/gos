@@ -58,7 +58,9 @@ def main():
     else:
         print_error(validation_status["message"], args.silent)
 
-    extracted_value_result = extract_values_to_search(args)
+    extracted_value_result = extract_values_to_search(
+        args.config, args.should, args.should_not
+    )
     should_have = extracted_value_result["data"]["should"]
     should_not_have = extracted_value_result["data"]["shouldNot"]
 
