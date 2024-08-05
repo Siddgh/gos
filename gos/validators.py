@@ -11,8 +11,6 @@ Parameters:
 4. Check if the config (-c) file is a valid json file
 5. Check if the config (-c) file has all the required keys
 7. Check if the inline parameters (-y, -n) are valid strings
-
-# TODO: Add More stuff
 """
 
 from os.path import isfile, isdir
@@ -50,7 +48,9 @@ def validate_input(value: str) -> dict:
     return {"status": True, "message": "Success: Input is valid"}
 
 
-def validate_config(args: any) -> dict:
+def validate_config(
+    config_path: str = None, should_path: str = None, should_not_path: str = None
+) -> dict:
     """
     Validates the config parameter passed using -c
     1. Check if config (-c) is provided with -y (should have) and -n (should not have)
@@ -59,15 +59,6 @@ def validate_config(args: any) -> dict:
     """
 
     # Check if inline parameters are provided with the config files
-    if isinstance(args, dict):
-        config_path = args.get("config", None)
-        should_path = args.get("should", None)
-        should_not_path = args.get("should_not", None)
-    else:
-        config_path = args.config
-        should_path = args.should
-        should_not_path = args.should_not
-
     if (exists(should_path) or exists(should_not_path)) and not exists(config_path):
         return {
             "status": True,
@@ -134,17 +125,10 @@ def validate_config(args: any) -> dict:
     return {"status": True, "message": "Success: Config file is valid"}
 
 
-def validate_inline_parameters(args: any) -> dict:
+def validate_inline_parameters(
+    config: str = None, should: str = None, should_not: str = None
+) -> dict:
     """Validate the inline parameters passed using -y and -n"""
-    if isinstance(args, dict):
-        should = args.get("should", None)
-        should_not = args.get("should_not", None)
-        config = args.get("config", None)
-    else:
-        should = args.should
-        should_not = args.should_not
-        config = args.config
-
     if (not exists(should) and not exists(should_not)) and not exists(config):
         return {"status": False, "message": "Error: Inline parameters are not provided"}
 
@@ -160,12 +144,16 @@ def is_input_valid(args: any) -> dict:
         return input_validation_result
 
     # -c <config>
-    config_validation_result = validate_config(args)
+    config_validation_result = validate_config(
+        args.config, args.should, args.should_not
+    )
     if not config_validation_result["status"]:
         return config_validation_result
 
     # -y <should>> and -n <should_not>
-    should_validation_result = validate_inline_parameters(args)
+    should_validation_result = validate_inline_parameters(
+        args.config, args.should, args.should_not
+    )
     if not should_validation_result["status"]:
         return should_validation_result
 

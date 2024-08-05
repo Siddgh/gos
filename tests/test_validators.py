@@ -104,22 +104,19 @@ def test_valid_input_no_directory_invalid():
 # 8 invalid cases
 def test_valid_config_file_valid():
     """When passed a valid config file to valid_config, it should have a status true and success message"""
-    args = {
-        "config": f"{os.getcwd()}/tests/templates/config_valid.json",
-    }
-    result = validate_config(args)
+    result = validate_config(
+        config_path=f"{os.getcwd()}/tests/templates/config_valid.json"
+    )
     assert result["status"] and result["message"] == "Success: Config file is valid"
 
 
 def test_both_config_and_inline_both_invalid():
     """When passed both config and both inline parameters to valid_config, it should have a status false and error message"""
-    args = {
-        "config": "/gos/config.json",
-        "should": "sample text",
-        "should_not": "another sample text",
-    }
-
-    result = validate_config(args)
+    result = validate_config(
+        config_path="/gos/config.json",
+        should_path="sample text",
+        should_not_path="another sample text",
+    )
     assert (
         not result["status"]
         and result["message"]
@@ -129,17 +126,13 @@ def test_both_config_and_inline_both_invalid():
 
 def test_both_config_and_inline_one_invalid():
     """When passed both config and a single inline parameters to valid_config, it should have a status false and error message"""
-    args_should = {
-        "config": "/gos/config.json",
-        "should": "sample text",
-    }
 
-    args_should_not = {
-        "config": "/gos/config.json",
-        "should": "sample text",
-    }
-    result_should = validate_config(args_should)
-    result_should_not = validate_config(args_should_not)
+    result_should = validate_config(
+        config_path="/gos/config.json", should_path="sample text"
+    )
+    result_should_not = validate_config(
+        config_path="/gos/config.json", should_path="sample text"
+    )
     assert (
         not result_should["status"]
         and result_should["message"]
@@ -155,10 +148,7 @@ def test_both_config_and_inline_one_invalid():
 
 def test_valid_config_file_directory_invalid():
     """When passed a directory as config, it should have a status false and error message"""
-    args = {
-        "config": f"{os.getcwd()}/tests/templates",
-    }
-    result = validate_config(args)
+    result = validate_config(config_path=f"{os.getcwd()}/tests/templates")
     assert (
         not result["status"]
         and result["message"] == "Error: Config file does not exist"
@@ -167,10 +157,7 @@ def test_valid_config_file_directory_invalid():
 
 def test_valid_config_file_nonjson_invalid():
     """When passed a non json file as config, it should have a status false and error message"""
-    args = {
-        "config": f"{os.getcwd()}/tests/test_validators.py",
-    }
-    result = validate_config(args)
+    result = validate_config(config_path=f"{os.getcwd()}/tests/test_validators.py")
     assert (
         not result["status"]
         and result["message"] == "Error: The configuration file should be a JSON file"
@@ -179,10 +166,9 @@ def test_valid_config_file_nonjson_invalid():
 
 def test_valid_config_file_json_invalid():
     """When passed a json file with missing keys, it should have a status as false and error message"""
-    args = {
-        "config": f"{os.getcwd()}/tests/templates/config_invalid_json.json",
-    }
-    result = validate_config(args)
+    result = validate_config(
+        config_path=f"{os.getcwd()}/tests/templates/config_invalid_json.json"
+    )
     assert (
         not result["status"]
         and result["message"]
@@ -192,10 +178,9 @@ def test_valid_config_file_json_invalid():
 
 def test_valid_config_file_json_missing_keys_invalid():
     """When passed a json file with missing keys, it should have a status as false and error message"""
-    args = {
-        "config": f"{os.getcwd()}/tests/templates/config_missing_keys.json",
-    }
-    result = validate_config(args)
+    result = validate_config(
+        config_path=f"{os.getcwd()}/tests/templates/config_missing_keys.json"
+    )
     assert (
         not result["status"]
         and result["message"]
@@ -205,10 +190,9 @@ def test_valid_config_file_json_missing_keys_invalid():
 
 def test_valid_config_file_incorrect_values_invalid():
     """When passed a json file with incorrect values, it should have a status as false and error message"""
-    args = {
-        "config": f"{os.getcwd()}/tests/templates/config_incorrect_values.json",
-    }
-    result = validate_config(args)
+    result = validate_config(
+        config_path=f"{os.getcwd()}/tests/templates/config_incorrect_values.json"
+    )
     assert (
         not result["status"]
         and result["message"] == "Error: 'should' should be a list, not a str"
@@ -217,10 +201,9 @@ def test_valid_config_file_incorrect_values_invalid():
 
 def test_valid_config_file_empty_values_invalid():
     """When passed a json file with empty values, it should have a status as false and error message"""
-    args = {
-        "config": f"{os.getcwd()}/tests/templates/config_empty_values.json",
-    }
-    result = validate_config(args)
+    result = validate_config(
+        config_path=f"{os.getcwd()}/tests/templates/config_empty_values.json"
+    )
     assert (
         not result["status"]
         and result["message"] == "Error: 'shouldNot' list should not be empty"
@@ -234,10 +217,7 @@ def test_valid_config_file_empty_values_invalid():
 
 def test_validate_inline_parameters_valid():
     """When passed valid inline parameters to validate_inline_parameters, it should have a status true and success message"""
-    args = {
-        "should": "sample text",
-    }
-    result = validate_inline_parameters(args)
+    result = validate_inline_parameters(should="sample text")
     assert (
         result["status"] and result["message"] == "Success: Inline parameters are valid"
     )
@@ -245,10 +225,7 @@ def test_validate_inline_parameters_valid():
 
 def test_validate_inline_parameters_empty_invalid():
     """When passed valid inline parameters to validate_inline_parameters, it should have a status true and success message"""
-    args = {
-        "should": "",
-    }
-    result = validate_inline_parameters(args)
+    result = validate_inline_parameters(should="")
     assert (
         not result["status"]
         and result["message"] == "Error: Inline parameters are not provided"
@@ -257,8 +234,7 @@ def test_validate_inline_parameters_empty_invalid():
 
 def test_validate_inline_parameters_none_invalid():
     """When passed valid inline parameters to validate_inline_parameters, it should have a status true and success message"""
-    args = {"should": None}
-    result = validate_inline_parameters(args)
+    result = validate_inline_parameters(should=None)
     assert (
         not result["status"]
         and result["message"] == "Error: Inline parameters are not provided"
@@ -267,8 +243,7 @@ def test_validate_inline_parameters_none_invalid():
 
 def test_validate_inline_parameters_with_white_spaces_invalid():
     """When passed valid inline parameters to validate_inline_parameters, it should have a status true and success message"""
-    args = {"should": "    "}
-    result = validate_inline_parameters(args)
+    result = validate_inline_parameters("    ")
     assert (
         not result["status"]
         and result["message"] == "Error: Inline parameters are not provided"
