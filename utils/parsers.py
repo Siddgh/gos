@@ -15,17 +15,10 @@ def parse_config(config: str) -> any:
         return None
 
 
-def extract_values_to_search(args: any) -> dict:
+def extract_values_to_search(
+    config: str = None, should: str = None, should_not: str = None
+) -> dict:
     """Extracts the values to search for from the provided input"""
-
-    if isinstance(args, dict):
-        config = args.get("config", None)
-        should = args.get("should", None)
-        should_not = args.get("should_not", None)
-    else:
-        config = args.config
-        should = args.should
-        should_not = args.should_not
 
     # If input passed through config file
     if config:
