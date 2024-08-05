@@ -18,14 +18,23 @@ def parse_config(config: str) -> any:
 def extract_values_to_search(args: any) -> dict:
     """Extracts the values to search for from the provided input"""
 
+    if isinstance(args, dict):
+        config = args.get("config", None)
+        should = args.get("should", None)
+        should_not = args.get("should_not", None)
+    else:
+        config = args.config
+        should = args.should
+        should_not = args.should_not
+
     # If input passed through config file
-    if args.config:
-        config = parse_config(args.config)
-        return {"source": "config", "data": config}
+    if config:
+        values = parse_config(config)
+        return {"source": "config", "data": values}
 
     # If input passed is through command-line arguments
     data = {
-        "should": args.should if args.should else "",
-        "shouldNot": args.should_not if args.should_not else "",
+        "should": should if should else "",
+        "shouldNot": should_not if should_not else "",
     }
     return {"source": "command-line arguments", "data": data}
