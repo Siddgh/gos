@@ -3,9 +3,16 @@ Starting point for GOS
 """
 
 import argparse
+import os
 from gos.validators import is_input_valid
 from gos.loggers import print_error, print_success, print_info, print_values
 from utils.parsers import extract_values_to_search
+from utils.tree_helper import (
+    get_files_and_directories,
+    get_folder_icon,
+    get_prefix,
+    get_full_path,
+)
 
 
 def parse_and_validate_input():
@@ -49,6 +56,30 @@ def parse_and_validate_input():
     return parser.parse_args()
 
 
+def traverse_and_create_tree(root, prefix="", is_last=True, silent=False):
+    """Traverses the given directory and creates a tree structure"""
+    if prefix == "":
+        # Special case for the root directory
+        print_info(os.path.basename(root), silent)
+        prefix = ""
+
+    icon = get_folder_icon(is_last)
+    if prefix:
+        # Only append icon if prefix is not empty, to avoid double icons at the root
+        print_info(f"{prefix}{icon}{os.path.basename(root)}", silent)
+    prefix += get_prefix(is_last)
+
+    contents = get_files_and_directories(root)
+    for index, item in enumerate(contents):
+        path = get_full_path(root, item)
+        is_last_item = index == len(contents) - 1
+        if os.path.isdir(path):
+            traverse_and_create_tree(path, prefix, is_last_item, silent)
+        elif os.path.isfile(path):
+            file_icon = get_folder_icon(is_last_item)
+            print_info(f"{prefix}{file_icon}{item}", silent)
+
+
 def main():
     """Main Function for GOS"""
     args = parse_and_validate_input()
@@ -72,6 +103,8 @@ def main():
         print_values(f"Should have: {should_have}", args.silent)
     if should_not_have:
         print_values(f"Should not have: {should_not_have}", args.silent)
+
+    traverse_and_create_tree(root=args.input, silent=args.silent)
 
 
 if __name__ == "__main__":
