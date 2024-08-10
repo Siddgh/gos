@@ -3,6 +3,8 @@ All functions to help with traversing and creating a search tree
 """
 
 import os
+import shutil
+import subprocess
 
 
 def get_folder_icon(is_last: bool) -> str:
@@ -26,3 +28,90 @@ def get_files_and_directories(path: str) -> list:
 def get_full_path(root, file_name):
     """combines the root and file_name to create full directory / file path"""
     return os.path.join(root, file_name)
+
+
+# def search_in_file(file_path, search_items):
+#     """Search for the provided strings in the file using grep"""
+#     matches = {search_items: [] for search_items in search_items}
+#     try:
+#         for search_item in search_items:
+#             result = subprocess.run(
+#                 ["grep", "-n", search_item, file_path],
+#                 stdout=subprocess.PIPE,
+#                 stderr=subprocess.PIPE,
+#                 text=True,
+#             )
+#             if result.returncode == 0:
+#                 for line in result.stdout.strip().split("\n"):
+#                     line_number, match = line.split(":", 1)
+#                     matches[search_item].append((int(line_number), match.strip()))
+#     except Exception:
+#         return matches
+
+
+def search_in_file(file_path, search_items):
+    """Search for the provided strings in the file using grep and categorize them by type."""
+    result = {"status": "success", "matches": [], "error": None}
+
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        result["status"] = "failure"
+        result["error"] = f"File {file_path} does not exist."
+        return result
+
+    # Check if grep is available on the system
+    if not shutil.which("grep"):
+        result["status"] = "failure"
+        result["error"] = "grep is not available on this system."
+        return result
+
+    try:
+        for item in search_items:
+            search_text = item["text"]
+            search_type = item["type"]
+
+            search_result = subprocess.run(
+                ["grep", "-n", search_text, file_path],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+
+            found = search_result.returncode == 0
+
+            if found:
+                for line in search_result.stdout.strip().split("\n"):
+                    line_number, _ = line.split(":", 1)
+                    status = search_type == "should"
+                    result["matches"].append(
+                        {
+                            "text": search_text,
+                            "line_number": int(line_number),
+                            "status": status,
+                        }
+                    )
+
+            else:
+                if search_type == "shouldNot":
+                    result["matches"].append(
+                        {"text": search_text, "line_number": None, "status": True}
+                    )
+                else:
+                    result["matches"].append(
+                        {"text": search_text, "line_number": None, "status": False}
+                    )
+
+    except FileNotFoundError:
+        result["status"] = "failure"
+        result["error"] = f"File {file_path} was not found."
+    except PermissionError:
+        result["status"] = "failure"
+        result["error"] = f"Permission denied for file {file_path}."
+    except subprocess.CalledProcessError as e:
+        result["status"] = "failure"
+        result["error"] = f"Subprocess error: {e}"
+    except ValueError as e:
+        result["status"] = "failure"
+        result["error"] = f"Value error: {e}"
+
+    return result
