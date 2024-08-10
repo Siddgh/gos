@@ -30,28 +30,9 @@ def get_full_path(root, file_name):
     return os.path.join(root, file_name)
 
 
-# def search_in_file(file_path, search_items):
-#     """Search for the provided strings in the file using grep"""
-#     matches = {search_items: [] for search_items in search_items}
-#     try:
-#         for search_item in search_items:
-#             result = subprocess.run(
-#                 ["grep", "-n", search_item, file_path],
-#                 stdout=subprocess.PIPE,
-#                 stderr=subprocess.PIPE,
-#                 text=True,
-#             )
-#             if result.returncode == 0:
-#                 for line in result.stdout.strip().split("\n"):
-#                     line_number, match = line.split(":", 1)
-#                     matches[search_item].append((int(line_number), match.strip()))
-#     except Exception:
-#         return matches
-
-
 def search_in_file(file_path, search_items):
     """Search for the provided strings in the file using grep and categorize them by type."""
-    result = {"status": "success", "matches": [], "error": None}
+    result = {"status": "success", "matches": [], "error": ""}
 
     # Check if the file exists
     if not os.path.exists(file_path):
@@ -75,30 +56,19 @@ def search_in_file(file_path, search_items):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
+                check=False,
             )
 
             found = search_result.returncode == 0
-
             if found:
                 for line in search_result.stdout.strip().split("\n"):
                     line_number, _ = line.split(":", 1)
-                    status = search_type == "should"
                     result["matches"].append(
                         {
                             "text": search_text,
                             "line_number": int(line_number),
-                            "status": status,
+                            "type": search_type,
                         }
-                    )
-
-            else:
-                if search_type == "shouldNot":
-                    result["matches"].append(
-                        {"text": search_text, "line_number": None, "status": True}
-                    )
-                else:
-                    result["matches"].append(
-                        {"text": search_text, "line_number": None, "status": False}
                     )
 
     except FileNotFoundError:
