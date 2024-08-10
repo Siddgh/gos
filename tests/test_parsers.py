@@ -49,11 +49,12 @@ def test_extract_values_to_search_commandline_valid():
         should="Sample Text", should_not="Another Sample Text"
     )
     assert result["source"] == "command-line arguments"
-    assert result["data"]["should"] == "Sample Text"
-    assert result["data"]["shouldNot"] == "Another Sample Text"
+    assert result["data"] == [
+        {"type": "should", "text": "Sample Text"},
+        {"type": "shouldNot", "text": "Another Sample Text"},
+    ]
 
     # commandline with a single key
     result2 = extract_values_to_search(should="Sample Text")
     assert result2["source"] == "command-line arguments"
-    assert result2["data"]["should"] == "Sample Text"
-    assert result2["data"]["shouldNot"] == ""
+    assert result2["data"] == [{"type": "should", "text": "Sample Text"}]

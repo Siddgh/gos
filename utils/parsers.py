@@ -3,6 +3,8 @@ This file hosts all the functions required for parsing different files
 """
 
 import json
+import os
+from utils.tree_helper import get_files_and_directories, get_full_path, search_in_file
 
 
 def parse_config(config: str) -> any:
@@ -26,8 +28,37 @@ def extract_values_to_search(
         return {"source": "config", "data": values}
 
     # If input passed is through command-line arguments
-    data = {
-        "should": should if should else "",
-        "shouldNot": should_not if should_not else "",
-    }
+    data = []
+    if should:
+        data.append({"type": "should", "text": should})
+    if should_not:
+        data.append({"type": "shouldNot", "text": should_not})
+
     return {"source": "command-line arguments", "data": data}
+
+
+def start_search(root, silent=False, search_string=None):
+    """Wrapper file that decides if traverse_and_create_tree is required and ensures it gets all the required input parameters"""
+    if search_string:
+        return traverse_and_create_tree(root, silent, search_string)
+    return None
+
+
+def traverse_and_create_tree(root, silent=False, search_string=None):
+    """Traverses the given directory and creates a tree structure"""
+    tree_obj = {"name": os.path.basename(root), "type": "directory", "children": []}
+    contents = get_files_and_directories(root)
+    for item in contents:
+        path = get_full_path(root, item)
+        if os.path.isdir(path):
+            child_tree = traverse_and_create_tree(path, silent, search_string)
+            tree_obj["children"].append(child_tree)
+        elif os.path.isfile(path):
+            tree_obj["children"].append(
+                {
+                    "name": item,
+                    "type": "file",
+                    "match": search_in_file(path, search_string),
+                }
+            )
+    return tree_obj

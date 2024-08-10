@@ -1,15 +1,6 @@
 from colorama import Fore, Style
 
 
-def print_header(message, is_silent=False, color=Fore.WHITE):
-    if is_silent:
-        return
-    print(color + message + Style.RESET_ALL)
-
-
-####################################
-
-
 def print_stuff(message: str, is_silent: bool = False, color: str = Fore.WHITE) -> None:
     """Global print function"""
     if is_silent:
@@ -44,7 +35,7 @@ def print_divider(is_silent=False, color=Fore.WHITE):
 def print_header_with_divider(message, is_silent=False):
     """Prints two dividers with message written in between"""
     print_divider(is_silent)
-    print_header(message, is_silent)
+    print_info(message, is_silent)
     print_divider(is_silent)
 
 
