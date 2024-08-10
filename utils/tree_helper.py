@@ -32,7 +32,7 @@ def get_full_path(root, file_name):
 
 def search_in_file(file_path, search_items):
     """Search for the provided strings in the file using grep and categorize them by type."""
-    result = {"status": "success", "matches": [], "error": ""}
+    result = {"status": "success", "matches": []}
 
     # Check if the file exists
     if not os.path.exists(file_path):
