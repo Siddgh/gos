@@ -5,7 +5,13 @@ Starting point for GOS
 import argparse
 import os
 from gos.validators import is_input_valid
-from gos.loggers import print_error, print_success, print_info, print_values
+from gos.loggers import (
+    print_error,
+    print_success,
+    print_info,
+    print_values,
+    print_file_tree,
+)
 from utils.parsers import extract_values_to_search, start_search
 
 
@@ -116,7 +122,7 @@ def main():
         silent=args.silent,
         search_string=extracted_value_result["data"],
     )
-    print(tree)
+    print_file_tree(directory=tree, is_silent=args.silent)
 
 
 if __name__ == "__main__":

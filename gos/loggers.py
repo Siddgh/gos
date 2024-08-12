@@ -63,3 +63,63 @@ def print_values(message, is_silent=False, color=Fore.WHITE):
     else:
         # If no colon is present, just print the message in the specified color
         print(color + message + Style.RESET_ALL)
+
+
+def print_file_tree(directory, indent=0, is_last=True, is_silent=False, prefix=""):
+    """Recursively prints the file tree with match details and icons."""
+    # Define symbols for directory structure
+    if indent > 0:
+        current_prefix = "└── " if is_last else "├── "
+        new_prefix = "    " if is_last else "│   "
+    else:
+        current_prefix = ""
+        new_prefix = ""
+
+    # Define icons
+    folder_icon = "📁"
+    file_icon = "📄"
+    found_icon = "✅"
+    not_found_icon = "❌"
+
+    # Check if the current item is a directory
+    if directory["type"] == "directory":
+        print_info(
+            f"{prefix}{current_prefix}{folder_icon} {directory['name']}",
+            is_silent,
+        )
+        children = directory.get("children", [])
+        for index, child in enumerate(children):
+            # Update prefix for children
+            new_prefix_str = new_prefix
+            if not is_last:
+                new_prefix_str += prefix
+            print_file_tree(
+                child,
+                indent + 4,
+                index == len(children) - 1,
+                is_silent,
+                prefix + new_prefix_str,
+            )
+
+    # If the current item is a file
+    elif directory["type"] == "file":
+        print_info(
+            f"{prefix}{current_prefix}{file_icon} {directory['name']}", is_silent
+        )
+        matches = directory.get("match", {}).get("matches", [])
+        if matches:
+            for match in matches:
+                status_icon = (
+                    found_icon if match["type"] == "should" else not_found_icon
+                )
+                status = "Found" if match["type"] == "should" else "Not Found"
+                print_info(
+                    f"{prefix}{' ' * 4}{status_icon} {match['text']} (Line {match['line_number']}): {status}",
+                    is_silent,
+                )
+
+    # Print a message if the type is neither directory nor file
+    else:
+        print_info(
+            f"{prefix}{current_prefix}Unknown type: {directory['type']}", is_silent
+        )
