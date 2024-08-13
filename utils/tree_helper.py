@@ -62,12 +62,13 @@ def search_in_file(file_path, search_items):
             found = search_result.returncode == 0
             if found:
                 for line in search_result.stdout.strip().split("\n"):
-                    line_number, _ = line.split(":", 1)
+                    line_number, line_content = line.split(":", 1)
                     result["matches"].append(
                         {
                             "text": search_text,
                             "line_number": int(line_number),
                             "type": search_type,
+                            "line_content": line_content.strip(),
                         }
                     )
 

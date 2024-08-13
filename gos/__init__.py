@@ -117,6 +117,7 @@ def main():
 
     # TODO: Make sure extracted_value_result["data"] is always a list
     # Currently in-line command line always returns a list, need to make sure that the elemets being returns from the config file are also returned as list.
+    print_info(f"\n🔍 Searching on path {args.input}\n", args.silent)
     tree = start_search(
         root=args.input,
         silent=args.silent,
