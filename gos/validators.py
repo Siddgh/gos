@@ -94,33 +94,34 @@ def validate_config(
 
     # Check if config file has all the required keys
     config = parse_config(config_path)
-    if not config:
-        return {
-            "status": False,
-            "message": "Error: The configuration file is not a valid JSON file",
-        }
 
     # Check if config file has a valid key inside
-    if "should" not in config or "shouldNot" not in config:
+    required_types = {"should", "shouldNot"}
+
+    # Extract the types from the configuration
+    config_types = {item.get("type") for item in config}
+
+    # Check if any required type is missing
+    if not required_types.intersection(config_types):
         return {
             "status": False,
             "message": "Error: The configuration file must contain either 'should' or 'shouldNot' keys",
         }
 
     # Check if config file has a valid value type inside
-    for key in ["should", "shouldNot"]:
-        if key in config:
-            value = config[key]
-            if not isinstance(value, list):
-                return {
-                    "status": False,
-                    "message": f"Error: '{key}' should be a list, not a {type(value).__name__}",
-                }
-            if len(value) == 0:
-                return {
-                    "status": False,
-                    "message": f"Error: '{key}' list should not be empty",
-                }
+    for search_element in config:
+        search_type = search_element.get("type")
+        search_text = search_element.get("text")
+        if not isinstance(search_text, list):
+            return {
+                "status": False,
+                "message": f"Error: '{search_type}' should be a list, not a {type(search_text).__name__}",
+            }
+        if len(search_text) == 0:
+            return {
+                "status": False,
+                "message": f"Error: '{search_type}' list should not be empty",
+            }
 
     return {"status": True, "message": "Success: Config file is valid"}
 

@@ -164,18 +164,6 @@ def test_valid_config_file_nonjson_invalid():
     )
 
 
-def test_valid_config_file_json_invalid():
-    """When passed a json file with missing keys, it should have a status as false and error message"""
-    result = validate_config(
-        config_path=f"{os.getcwd()}/tests/templates/config_invalid_json.json"
-    )
-    assert (
-        not result["status"]
-        and result["message"]
-        == "Error: The configuration file is not a valid JSON file"
-    )
-
-
 def test_valid_config_file_json_missing_keys_invalid():
     """When passed a json file with missing keys, it should have a status as false and error message"""
     result = validate_config(
