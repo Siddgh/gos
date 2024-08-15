@@ -65,46 +65,36 @@ def print_values(message, is_silent=False, color=Fore.WHITE):
         print(color + message + Style.RESET_ALL)
 
 
-def print_file_tree(directory, indent=0, is_last=True, is_silent=False):
+def print_file_tree(node, prefix="", is_last=True, show_files=False, is_silent=False):
     """Recursively prints the file tree with extended lines and match details."""
-    # Define symbols for directory structure
-    if indent > 0:
-        prefix = "└── " if is_last else "├── "
-        spacer = "    " if is_last else "│   "
-        line = "│   " if not is_last else "    "
-    else:
-        prefix = ""
-        spacer = ""
-        line = ""
+    connector = "└── " if is_last else "├── "
+    vertical = "│   " if not is_last else "    "
+    spacer = "    " if is_last else "│   "
 
-    # Calculate the maximum width for alignment
-    max_width = 60  # Adjust this value based on your requirements
-    max_line_width = (
-        max_width + indent + 4
-    )  # Add some padding to accommodate the tree structure
-
-    # Check if the current item is a directory
-    if directory["type"] == "directory":
-        print_info(f"{' ' * indent}{prefix}{directory['name']}", is_silent)
-        children = directory.get("children", [])
-        for index, child in enumerate(children):
-            # Recursively print each child with the appropriate prefix and spacer
-            print_file_tree(child, indent + 4, index == len(children) - 1, is_silent)
-
-    # If the current item is a file
-    elif directory["type"] == "file":
-        matches = directory.get("match", {}).get("matches", [])
+    # Print the current directory or file
+    if node["type"] == "directory":
+        print_info(f'{prefix}{connector}{node["name"]}', is_silent)
+        if "children" in node:
+            # Adjust prefix for children
+            new_prefix = prefix + spacer
+            # Iterate over the children
+            num_children = len(node["children"])
+            for i, child in enumerate(node["children"]):
+                # Determine if this is the last item in the list
+                is_last_child = i == num_children - 1
+                # Print the child with updated prefix
+                print_file_tree(child, new_prefix, is_last_child, show_files, is_silent)
+    elif node["type"] == "file" and show_files:
+        # Get match information and determine color
+        matches = node.get("match", {}).get("matches", [])
         color = Fore.YELLOW if matches else Fore.WHITE
-        print_info(f"{' ' * indent}{prefix}{directory['name']}", is_silent, color=color)
+        # Print the file name
+        print_info(f'{prefix}{connector}{node["name"]}', is_silent, color=color)
         if matches:
+            # Print match information
             for match in matches:
-                status = "Found" if match["type"] == "should" else "Found"
-                icon = "✔" if match["type"] == "should" else "⨯"
+                icon = "✔" if match["type"] == "should" else "✘"
                 line_content = match.get("line_content", "")
-                color = Fore.GREEN if match["type"] == "should" else Fore.RED
-                match_line = f"{' ' * (indent + 4)}{line} {icon} {status}: \"{match['text']}\" (Line {match['line_number']}): {line_content}"
-                print_info(match_line.ljust(max_line_width), is_silent, color=color)
-    else:
-        print_info(
-            f"{' ' * indent}{prefix}Unknown type: {directory['type']}", is_silent
-        )
+                match_line = f"{prefix}{vertical} {icon} (Line {match['line_number']}) \"{match['text']}\": {line_content}"
+                match_color = Fore.GREEN if match["type"] == "should" else Fore.RED
+                print_info(match_line, is_silent, color=match_color)

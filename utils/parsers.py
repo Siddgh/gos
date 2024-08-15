@@ -10,9 +10,25 @@ from utils.tree_helper import get_files_and_directories, get_full_path, search_i
 def parse_config(config: str) -> any:
     """Reads the provided config file and tries to convert it to a dictionary"""
     try:
+        data = []
         with open(config, "r", encoding="utf-8") as config_file:
             config = json.load(config_file)
-            return config
+            should = config.get("should", [])
+            should_not = config.get("shouldNot", [])
+
+            if should and isinstance(should, list):
+                for item in should:
+                    data.append({"type": "should", "text": item})
+            if should_not and isinstance(should_not, list):
+                for item in should_not:
+                    data.append({"type": "shouldNot", "text": item})
+
+            if should and isinstance(should, str):
+                data.append({"type": "should", "text": should})
+            if should_not and isinstance(should_not, str):
+                data.append({"type": "shouldNot", "text": should_not})
+
+            return data
     except (json.JSONDecodeError, OSError):
         return None
 

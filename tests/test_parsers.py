@@ -9,8 +9,10 @@ def test_parse_config_valid():
     """When passed a config file, it should return true if the config is successfully parsed and the values are successfully read"""
 
     config = parse_config("tests/templates/config_valid.json")
-    assert config["should"] == ["Sample Text"]
-    assert config["shouldNot"] == ["Another Sample Text"]
+    assert config == [
+        {"type": "should", "text": "Sample Text"},
+        {"type": "shouldNot", "text": "Another Sample Text"},
+    ]
 
 
 def test_parse_config_invalid():
@@ -29,16 +31,17 @@ def test_extract_values_to_search_config_valid():
     # config with both keys
     result = extract_values_to_search(config="tests/templates/config_valid.json")
     assert result["source"] == "config"
-    assert result["data"]["should"] == ["Sample Text"]
-    assert result["data"]["shouldNot"] == ["Another Sample Text"]
+    assert result["data"] == [
+        {"type": "should", "text": "Sample Text"},
+        {"type": "shouldNot", "text": "Another Sample Text"},
+    ]
 
     # config with a single key
     result2 = extract_values_to_search(
         config="tests/templates/config_empty_values.json"
     )
     assert result2["source"] == "config"
-    assert result2["data"]["should"] == ["Sample Text"]
-    assert result2["data"]["shouldNot"] == []
+    assert result2["data"] == [{"type": "should", "text": "Sample Text"}]
 
 
 def test_extract_values_to_search_commandline_valid():
