@@ -108,21 +108,6 @@ def validate_config(
             "message": "Error: The configuration file must contain either 'should' or 'shouldNot' keys",
         }
 
-    # Check if config file has a valid value type inside
-    for search_element in config:
-        search_type = search_element.get("type")
-        search_text = search_element.get("text")
-        if not isinstance(search_text, list):
-            return {
-                "status": False,
-                "message": f"Error: '{search_type}' should be a list, not a {type(search_text).__name__}",
-            }
-        if len(search_text) == 0:
-            return {
-                "status": False,
-                "message": f"Error: '{search_type}' list should not be empty",
-            }
-
     return {"status": True, "message": "Success: Config file is valid"}
 
 

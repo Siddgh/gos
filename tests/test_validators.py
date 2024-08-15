@@ -176,28 +176,6 @@ def test_valid_config_file_json_missing_keys_invalid():
     )
 
 
-def test_valid_config_file_incorrect_values_invalid():
-    """When passed a json file with incorrect values, it should have a status as false and error message"""
-    result = validate_config(
-        config_path=f"{os.getcwd()}/tests/templates/config_incorrect_values.json"
-    )
-    assert (
-        not result["status"]
-        and result["message"] == "Error: 'should' should be a list, not a str"
-    )
-
-
-def test_valid_config_file_empty_values_invalid():
-    """When passed a json file with empty values, it should have a status as false and error message"""
-    result = validate_config(
-        config_path=f"{os.getcwd()}/tests/templates/config_empty_values.json"
-    )
-    assert (
-        not result["status"]
-        and result["message"] == "Error: 'shouldNot' list should not be empty"
-    )
-
-
 ########### validate_inline_parameters() ############
 # 1 valid cases
 # 3 invalid cases
