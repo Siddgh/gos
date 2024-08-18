@@ -133,6 +133,11 @@ def test_start_search_with_root_and_search_string():
                 "type": "file",
                 "match": {"status": "success", "matches": []},
             },
+            {
+                "name": "search_in_file.txt",
+                "type": "file",
+                "match": {"status": "success", "matches": []},
+            },
         ],
     }
     assert result == expected_result
