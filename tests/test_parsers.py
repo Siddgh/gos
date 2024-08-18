@@ -1,5 +1,5 @@
 import json
-from utils.parsers import parse_config, extract_values_to_search
+from utils.parsers import parse_config, extract_values_to_search, start_search
 
 
 ############ parse_config ############
@@ -61,3 +61,77 @@ def test_extract_values_to_search_commandline_valid():
     result2 = extract_values_to_search(should="Sample Text")
     assert result2["source"] == "command-line arguments"
     assert result2["data"] == [{"type": "should", "text": "Sample Text"}]
+
+
+############ start_search ############
+# 1 valid case
+# 3 invalid case
+
+
+def test_start_search_with_no_parameters():
+    """When passed no parameters to start search, it should return nothing"""
+    result = start_search("")
+    assert result is None
+
+
+def test_start_search_with_no_root_and_search_string():
+    """When passed no root and search string, it should return nothing"""
+    result = start_search("", "Sample Text")
+    assert result is None
+
+
+def test_start_search_with_root_and_no_search_string():
+    """When passed root and no search string, it should return nothing"""
+    result = start_search(root="tests/templates")
+    assert result is None
+
+
+def test_start_search_with_root_and_search_string():
+    """When passed root and search string, it should return the correct result"""
+    result = start_search(
+        root="tests/templates/",
+        search_string=[{"type": "should", "text": "Sample Key"}],
+    )
+
+    expected_result = {
+        "name": "",
+        "type": "directory",
+        "children": [
+            {
+                "name": "config_empty_values.json",
+                "type": "file",
+                "match": {"status": "success", "matches": []},
+            },
+            {
+                "name": "config_incorrect_values.json",
+                "type": "file",
+                "match": {"status": "success", "matches": []},
+            },
+            {
+                "name": "config_invalid_json.json",
+                "type": "file",
+                "match": {"status": "success", "matches": []},
+            },
+            {
+                "name": "config_missing_keys.json",
+                "type": "file",
+                "match": {
+                    "status": "success",
+                    "matches": [
+                        {
+                            "text": "Sample Key",
+                            "line_number": 2,
+                            "type": "should",
+                            "line_content": '"key": "Sample Key"',
+                        }
+                    ],
+                },
+            },
+            {
+                "name": "config_valid.json",
+                "type": "file",
+                "match": {"status": "success", "matches": []},
+            },
+        ],
+    }
+    assert result == expected_result
