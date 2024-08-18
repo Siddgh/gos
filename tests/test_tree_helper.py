@@ -5,6 +5,7 @@ from utils.tree_helper import (
     get_prefix,
     get_files_and_directories,
     get_full_path,
+    search_in_file,
 )
 
 
@@ -120,3 +121,74 @@ def test_get_full_path_both_valid():
     """
     result = get_full_path("tests/templates", "test_tree_helper.py")
     assert result == "tests/templates/test_tree_helper.py"
+
+
+############ search_in_file ############
+# 2 valid case
+# 2 invalid case
+
+
+def test_search_in_file_path_empty_invalid():
+    """
+    Test case for the search_in_file function when the parameter `file_path` is empty
+    """
+    assert search_in_file("", ["test"]) == {
+        "error": "File  does not exist.",
+        "matches": [],
+        "status": "failure",
+    }
+
+
+def test_search_in_file_path_invalid():
+    """
+    Test case for the search_in_file function when the parameter `file_path` is a file path with invalid values
+    """
+    result = search_in_file("tests/templates/config_missing_keys.json", ["sample maps"])
+    assert result == {
+        "status": "failure",
+        "matches": [],
+        "error": "Type error: string indices must be integers, not 'str'",
+    }
+
+
+def test_search_in_file_path_nomatch_valid():
+    """
+    Test case for the search_in_file function when the parameter `file_path` is a file path with no match
+    """
+    result = search_in_file(
+        "testfolder/anotherfolder/myfile1.txt",
+        [{"type": "should", "text": "Sample Text 1"}],
+    )
+
+    assert result == {
+        "status": "success",
+        "matches": [],
+    }
+
+
+def test_search_in_file_path_match_valid():
+    """
+    Test case for the search_in_file function when the parameter `file_path` is a file path with valid values
+    """
+    result = search_in_file(
+        "testfolder/anotherfolder/myfile1.txt",
+        [{"type": "should", "text": "Sample Text"}],
+    )
+
+    assert result == {
+        "status": "success",
+        "matches": [
+            {
+                "text": "Sample Text",
+                "line_number": 3,
+                "type": "should",
+                "line_content": "This is a Sample Text",
+            },
+            {
+                "text": "Sample Text",
+                "line_number": 24,
+                "type": "should",
+                "line_content": "What a bunch of Sample Text this is",
+            },
+        ],
+    }

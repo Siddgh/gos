@@ -27,12 +27,12 @@ def get_files_and_directories(path: str) -> list:
         return []
 
 
-def get_full_path(root, file_name):
+def get_full_path(root: str, file_name: str):
     """combines the root and file_name to create full directory / file path"""
     return os.path.join(root, file_name)
 
 
-def search_in_file(file_path, search_items):
+def search_in_file(file_path: str, search_items: list):
     """Search for the provided strings in the file using grep and categorize them by type."""
     result = {"status": "success", "matches": []}
 
@@ -49,6 +49,7 @@ def search_in_file(file_path, search_items):
         return result
 
     try:
+        print(search_items)
         for item in search_items:
             search_text = item["text"]
             search_type = item["type"]
@@ -86,5 +87,8 @@ def search_in_file(file_path, search_items):
     except ValueError as e:
         result["status"] = "failure"
         result["error"] = f"Value error: {e}"
+    except TypeError as e:
+        result["status"] = "failure"
+        result["error"] = f"Type error: {e}"
 
     return result
