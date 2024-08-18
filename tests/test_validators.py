@@ -8,6 +8,7 @@ from gos.validators import (
     validate_input,
     validate_config,
     validate_inline_parameters,
+    is_input_valid,
 )
 
 
@@ -214,3 +215,101 @@ def test_validate_inline_parameters_with_white_spaces_invalid():
         not result["status"]
         and result["message"] == "Error: Inline parameters are not provided"
     )
+
+
+########### is_input_valid() ############
+# 2 valid cases
+# 7 invalid cases
+
+
+def test_is_input_valid_empty_parameter_invalid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    result = is_input_valid("")
+    print(result)
+    assert (
+        not result["status"] and result["message"] == "Error: Invalid input parameters"
+    )
+
+
+def test_is_input_valid_empty_input_parameter_invalid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    input_args = {"input": ""}
+    result = is_input_valid(input_args)
+    assert (
+        not result["status"]
+        and result["message"] == "Error: Input parameter not provided"
+    )
+
+
+def test_is_input_valid_none_parameter_invalid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    result = is_input_valid(None)
+    print(result)
+    assert (
+        not result["status"] and result["message"] == "Error: Invalid input parameters"
+    )
+
+
+def test_is_input_valid_none_input_parameter_invalid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    input_args = {"input": None}
+    result = is_input_valid(input_args)
+    print(result)
+    assert (
+        not result["status"]
+        and result["message"] == "Error: Input parameter not provided"
+    )
+
+
+def test_is_input_valid_with_no_other_parameters_invalid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    input_args = {"input": "tests/templates"}
+    result = is_input_valid(input_args)
+    print(result)
+    assert not result["status"] and result["message"] == "Error: No parameters provided"
+
+
+def test_is_input_valid_with_both_inline_and_config_parameters_invalid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    input_args = {
+        "input": "tests/templates",
+        "config": "tests/templates/config_valid.json",
+        "should": "Sample Text",
+    }
+    result = is_input_valid(input_args)
+    print(result)
+    assert (
+        not result["status"]
+        and result["message"]
+        == "Error: Both a configuration file and inline values cannot be provided simultaneously"
+    )
+
+
+def test_is_input_valid_with_bad_config_file_invalid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    input_args = {
+        "input": "tests/templates",
+        "config": "tests/templates/config_invalid_json.json",
+    }
+    result = is_input_valid(input_args)
+    print(result)
+    assert not result["status"] and result["message"] == "Error: Invalid config file"
+
+
+def test_is_input_valid_with_inline_input_parameter_valid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    input_args = {"input": "tests/templates", "should": "Sample Text"}
+    result = is_input_valid(input_args)
+    print(result)
+    assert result["status"] and result["message"] == "Success: All inputs are valid"
+
+
+def test_is_input_valid_with_config_input_parameter_valid():
+    """When passed an empty parameter to is_input_valid, it should have a status false and error message"""
+    input_args = {
+        "input": "tests/templates",
+        "config": "tests/templates/config_valid.json",
+    }
+    result = is_input_valid(input_args)
+    print(result)
+    assert result["status"] and result["message"] == "Success: All inputs are valid"

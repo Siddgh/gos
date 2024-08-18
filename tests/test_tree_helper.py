@@ -180,7 +180,6 @@ def test_search_in_file_path_match_valid():
         [{"type": "should", "text": "Sample Text"}],
     )
 
-    print(result)
     assert result == {
         "status": "success",
         "matches": [

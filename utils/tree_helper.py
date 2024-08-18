@@ -49,7 +49,6 @@ def search_in_file(file_path: str, search_items: list):
         return result
 
     try:
-        print(search_items)
         for item in search_items:
             search_text = item["text"]
             search_type = item["type"]

@@ -8,13 +8,6 @@ def print_stuff(message: str, is_silent: bool = False, color: str = Fore.WHITE) 
     print(color + message + Style.RESET_ALL)
 
 
-def print_info(message, is_silent=False, color=Fore.WHITE):
-    """Wrapper to print info message"""
-    if is_silent:
-        return
-    print(color + message + Style.RESET_ALL)
-
-
 def print_error(message: str, is_silent: bool = False) -> None:
     """Wrapper to print error message"""
     print_stuff(f"✗ {message}", is_silent, Fore.RED)
@@ -35,7 +28,7 @@ def print_divider(is_silent=False, color=Fore.WHITE):
 def print_header_with_divider(message, is_silent=False):
     """Prints two dividers with message written in between"""
     print_divider(is_silent)
-    print_info(message, is_silent)
+    print_stuff(message, is_silent)
     print_divider(is_silent)
 
 
@@ -73,7 +66,7 @@ def print_file_tree(node, prefix="", is_last=True, show_files=False, is_silent=F
 
     # Print the current directory or file
     if node["type"] == "directory":
-        print_info(f'{prefix}{connector}{node["name"]}', is_silent)
+        print_stuff(f'{prefix}{connector}{node["name"]}', is_silent)
         if "children" in node:
             # Adjust prefix for children
             new_prefix = prefix + spacer
@@ -89,7 +82,7 @@ def print_file_tree(node, prefix="", is_last=True, show_files=False, is_silent=F
         matches = node.get("match", {}).get("matches", [])
         color = Fore.YELLOW if matches else Fore.WHITE
         # Print the file name
-        print_info(f'{prefix}{connector}{node["name"]}', is_silent, color=color)
+        print_stuff(f'{prefix}{connector}{node["name"]}', is_silent, color=color)
         if matches:
             # Print match information
             for match in matches:
@@ -97,4 +90,4 @@ def print_file_tree(node, prefix="", is_last=True, show_files=False, is_silent=F
                 line_content = match.get("line_content", "")
                 match_line = f"{prefix}{vertical} {icon} (Line {match['line_number']}) \"{match['text']}\": {line_content}"
                 match_color = Fore.GREEN if match["type"] == "should" else Fore.RED
-                print_info(match_line, is_silent, color=match_color)
+                print_stuff(match_line, is_silent, color=match_color)
