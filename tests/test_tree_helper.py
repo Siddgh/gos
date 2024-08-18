@@ -85,6 +85,7 @@ def test_get_files_and_directories_folder_path_valid():
         "config_invalid_json.json",
         "config_missing_keys.json",
         "config_valid.json",
+        "search_in_file.txt",
     ]
 
 
@@ -156,7 +157,7 @@ def test_search_in_file_path_nomatch_valid():
     Test case for the search_in_file function when the parameter `file_path` is a file path with no match
     """
     result = search_in_file(
-        "testfolder/anotherfolder/myfile1.txt",
+        "tests/templates/search_in_file.txt",
         [{"type": "should", "text": "Sample Text 1"}],
     )
 
@@ -171,24 +172,19 @@ def test_search_in_file_path_match_valid():
     Test case for the search_in_file function when the parameter `file_path` is a file path with valid values
     """
     result = search_in_file(
-        "testfolder/anotherfolder/myfile1.txt",
+        "tests/templates/search_in_file.txt",
         [{"type": "should", "text": "Sample Text"}],
     )
 
+    print(result)
     assert result == {
         "status": "success",
         "matches": [
             {
                 "text": "Sample Text",
-                "line_number": 3,
+                "line_number": 1,
                 "type": "should",
                 "line_content": "This is a Sample Text",
-            },
-            {
-                "text": "Sample Text",
-                "line_number": 24,
-                "type": "should",
-                "line_content": "What a bunch of Sample Text this is",
-            },
+            }
         ],
     }
