@@ -16,7 +16,6 @@ Parameters:
 from os.path import isfile, isdir
 from utils.text_formatters import remove_white_spaces
 from utils.parsers import parse_config
-from gos.loggers import print_stuff
 
 
 def exists(value: str) -> bool:
@@ -58,57 +57,60 @@ def validate_config(
     3. Check if config (-c) has all the reequired keys
     """
 
-    # Check if inline parameters are provided with the config files
-    if (exists(should_path) or exists(should_not_path)) and not exists(config_path):
-        return {
-            "status": True,
-            "message": "No Config Provided",
-        }
+    try:
+        # Check if inline parameters are provided with the config files
+        if (exists(should_path) or exists(should_not_path)) and not exists(config_path):
+            return {
+                "status": True,
+                "message": "No Config Provided",
+            }
 
-    if (
-        not exists(should_path)
-        and not exists(should_not_path)
-        and not exists(config_path)
-    ):
-        return {
-            "status": False,
-            "message": "Error: No parameters provided",
-        }
+        if (
+            not exists(should_path)
+            and not exists(should_not_path)
+            and not exists(config_path)
+        ):
+            return {
+                "status": False,
+                "message": "Error: No parameters provided",
+            }
 
-    if exists(config_path) and (exists(should_path) or exists(should_not_path)):
-        return {
-            "status": False,
-            "message": "Error: Both a configuration file and inline values cannot be provided simultaneously",
-        }
+        if exists(config_path) and (exists(should_path) or exists(should_not_path)):
+            return {
+                "status": False,
+                "message": "Error: Both a configuration file and inline values cannot be provided simultaneously",
+            }
 
-    # Check if config file provided is a file
-    if not isfile(config_path):
-        return {"status": False, "message": "Error: Config file does not exist"}
+        # Check if config file provided is a file
+        if not isfile(config_path):
+            return {"status": False, "message": "Error: Config file does not exist"}
 
-    # Check if config file provided is a valid json file
-    if not config_path.lower().endswith(".json"):
-        return {
-            "status": False,
-            "message": "Error: The configuration file should be a JSON file",
-        }
+        # Check if config file provided is a valid json file
+        if not config_path.lower().endswith(".json"):
+            return {
+                "status": False,
+                "message": "Error: The configuration file should be a JSON file",
+            }
 
-    # Check if config file has all the required keys
-    config = parse_config(config_path)
+        # Check if config file has all the required keys
+        config = parse_config(config_path)
 
-    # Check if config file has a valid key inside
-    required_types = {"should", "shouldNot"}
+        # Check if config file has a valid key inside
+        required_types = {"should", "shouldNot"}
 
-    # Extract the types from the configuration
-    config_types = {item.get("type") for item in config}
+        # Extract the types from the configuration
+        config_types = {item.get("type") for item in config}
 
-    # Check if any required type is missing
-    if not required_types.intersection(config_types):
-        return {
-            "status": False,
-            "message": "Error: The configuration file must contain either 'should' or 'shouldNot' keys",
-        }
+        # Check if any required type is missing
+        if not required_types.intersection(config_types):
+            return {
+                "status": False,
+                "message": "Error: The configuration file must contain either 'should' or 'shouldNot' keys",
+            }
 
-    return {"status": True, "message": "Success: Config file is valid"}
+        return {"status": True, "message": "Success: Config file is valid"}
+    except TypeError:
+        return {"status": False, "message": "Error: Invalid config file"}
 
 
 def validate_inline_parameters(
@@ -123,24 +125,26 @@ def validate_inline_parameters(
 
 def is_input_valid(args: any) -> dict:
     """Validate all the input parameters passed to the script"""
-    print_stuff("Validating inputs", args.silent)
-    # -i <input>
-    input_validation_result = validate_input(args.input)
-    if not input_validation_result["status"]:
-        return input_validation_result
+    try:
+        # -i <input>
+        input_validation_result = validate_input(args.get("input", ""))
+        if not input_validation_result["status"]:
+            return input_validation_result
 
-    # -c <config>
-    config_validation_result = validate_config(
-        args.config, args.should, args.should_not
-    )
-    if not config_validation_result["status"]:
-        return config_validation_result
+        # -c <config>
+        config_validation_result = validate_config(
+            args.get("config", ""), args.get("should", ""), args.get("should_not", "")
+        )
+        if not config_validation_result["status"]:
+            return config_validation_result
 
-    # -y <should>> and -n <should_not>
-    should_validation_result = validate_inline_parameters(
-        args.config, args.should, args.should_not
-    )
-    if not should_validation_result["status"]:
-        return should_validation_result
+        # -y <should>> and -n <should_not>
+        should_validation_result = validate_inline_parameters(
+            args.get("config", ""), args.get("should", ""), args.get("should_not", "")
+        )
+        if not should_validation_result["status"]:
+            return should_validation_result
 
-    return {"status": True, "message": "Success: All inputs are valid"}
+        return {"status": True, "message": "Success: All inputs are valid"}
+    except AttributeError:
+        return {"status": False, "message": "Error: Invalid input parameters"}
