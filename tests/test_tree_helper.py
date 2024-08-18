@@ -77,10 +77,7 @@ def test_get_files_and_directories_folder_path_valid():
     """
     Test case for the get_files_and_directories function when the parameter `path` is a folder path
     """
-    result = get_files_and_directories(
-        "/Users/sidd/Documents/github/gos/tests/templates"
-    )
-    print(result)
+    result = get_files_and_directories("tests/templates")
     assert result == [
         "config_empty_values.json",
         "config_incorrect_values.json",
@@ -105,8 +102,8 @@ def test_get_full_path_only_root_valid():
     """
     Test case for the get_full_path function when the parameter `root` and `file_name` is valid
     """
-    result = get_full_path("/Users/sidd/Documents/github/gos/tests/templates", "")
-    assert result == "/Users/sidd/Documents/github/gos/tests/templates/"
+    result = get_full_path("tests/templates", "")
+    assert result == "tests/templates/"
 
 
 def test_get_full_path_only_file_name_valid():
@@ -121,9 +118,5 @@ def test_get_full_path_both_valid():
     """
     Test case for the get_full_path function when the parameter `root` and `file_name` is valid
     """
-    result = get_full_path(
-        "/Users/sidd/Documents/github/gos/tests/templates", "test_tree_helper.py"
-    )
-    assert (
-        result == "/Users/sidd/Documents/github/gos/tests/templates/test_tree_helper.py"
-    )
+    result = get_full_path("tests/templates", "test_tree_helper.py")
+    assert result == "tests/templates/test_tree_helper.py"
