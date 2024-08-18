@@ -1,3 +1,8 @@
+"""
+This file contains all the helper functions for formatting 
+and printing things on the terminal window
+"""
+
 from colorama import Fore, Style
 
 
