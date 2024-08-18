@@ -149,6 +149,10 @@ def test_search_in_file_path_invalid():
         "status": "failure",
         "matches": [],
         "error": "Type error: string indices must be integers, not 'str'",
+    } or result == {
+        "status": "failure",
+        "matches": [],
+        "error": "Type error: string indices must be integers",
     }
 
 
