@@ -23,6 +23,8 @@ def get_files_and_directories(path: str) -> list:
         return sorted(os.listdir(path))
     except NotADirectoryError:
         return []
+    except FileNotFoundError:
+        return []
 
 
 def get_full_path(root, file_name):
